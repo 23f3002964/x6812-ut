@@ -1,0 +1,21 @@
+[Unit]
+Description=X6812 bring-up log (journal -> data partition)
+Documentation=https://github.com/ubports
+# This device has no working pstore and rootfs.img is mounted read-only, so the
+# only persistent place to keep the boot log is the data partition itself
+# (the SD card in Track T, userdata after the real install).
+DefaultDependencies=no
+After=systemd-journald.service
+Wants=systemd-journald.service
+ConditionPathIsMountPoint=/userdata
+
+[Service]
+Type=simple
+# -b prints everything journald still has from this boot, -f keeps following.
+ExecStart=/bin/sh -c 'exec journalctl -b -f -o short-precise --no-pager >> /userdata/x6812-journal.log'
+Restart=always
+RestartSec=2
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

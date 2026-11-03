@@ -1,0 +1,25 @@
+# system.prop — Infinix Hot 11s (X6812)
+# Values taken from the stock vendor build (230921V645) so the Halium Android
+# system image reports the same hardware to the Ubuntu Touch Android container.
+
+ro.product.device=X6812
+ro.product.board=mt6768
+ro.board.platform=mt6768
+ro.hardware=mt6768
+
+# Treble / vendor interface actually present on the device
+ro.vendor.api_level=30
+ro.board.api_level=30
+ro.vndk.version=30
+ro.treble.enabled=true
+
+# A/B + dynamic partitions (verified with getprop)
+ro.build.ab_update=true
+ro.boot.dynamic_partitions=true
+
+# Halium markers
+ro.halium.device=X6812
+ro.halium.soc=mt6768
+ro.halium.arch=arm64
+ro.halium.vendor_api_level=30
+ro.halium.kernel_vermagic=4.14.186-g8ed8f1a9884b-dirty

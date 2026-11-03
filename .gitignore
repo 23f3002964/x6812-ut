@@ -1,0 +1,29 @@
+# Build artifacts
+out/
+*.img
+*.gz
+*.xz
+*.tar
+*.tar.gz
+*.tar.xz
+*.ko
+*.bin
+*.img.prev
+
+# Temporary files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.pyc
+__pycache__/
+
+# OS
+*.log
+*.tmp
+*.temp

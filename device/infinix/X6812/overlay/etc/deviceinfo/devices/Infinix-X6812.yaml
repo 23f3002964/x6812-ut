@@ -1,0 +1,28 @@
+Infinix-X6812:
+  Names:
+    - Infinix-X6812
+    - Infinix Hot 11s
+  Vendor: Infinix
+  PrettyName: Infinix Hot 11s
+  DeviceType: phone
+  GridUnit: 21
+  WebkitDpr: 2
+  PrimaryOrientation: Portrait
+  SupportedOrientations:
+    - Portrait
+    - InvertedPortrait
+    - Landscape
+    - InvertedLandscape
+  SensorfwConfig: /etc/deviceinfo/sensorfw/hybris.conf
+  # Read by mir's graphics-android2 platform (native HWC2 path).
+  MirAndroidPlatformServerPartialUpdates:
+    - false
+  MirAndroidPlatformServerBackpressure:
+    - true
+  MirAndroidPlatformServerEglSync:
+    - true
+  MirAndroidPlatformClientFenceSync:
+    - all
+  # Not a libdeviceinfo 0.1 key yet; kept for a future deviceinfo/repowerd that
+  # reads it. MTK exposes the panel backlight here, not in /sys/class/backlight.
+  BacklightSysfsPath: "/sys/class/leds/lcd-backlight"

@@ -1,0 +1,22 @@
+# fstab.mt6768 — Infinix Hot 11s (X6812)
+#
+# Copy of the stock layout, kept for reference and for any tooling that looks
+# for an fstab under device/*/X6812. The Halium boot image itself does not use
+# this file: halium-boot downloads a generic Ubuntu Touch initramfs which finds
+# partitions at runtime (see out/halium-initramfs/scripts/halium).
+#
+# Real block nodes verified on the device (2026-11-03):
+#   userdata -> /dev/block/mmcblk0p47    super   -> /dev/block/mmcblk0p45
+#   md_udc   -> /dev/block/mmcblk0p13    metadata-> /dev/block/mmcblk0p14
+#   boot_a   -> /dev/block/mmcblk0p28    dtbo_a  -> /dev/block/mmcblk0p30
+#
+# Android 11 stock layout (logical partitions live inside super):
+
+system         /system      ext4 ro wait,slotselect,avb=vbmeta_system,logical,first_stage_mount
+system_ext     /system_ext  ext4 ro wait,slotselect,avb,logical,first_stage_mount
+vendor         /vendor      ext4 ro wait,slotselect,avb,logical,first_stage_mount
+product        /product     ext4 ro wait,slotselect,avb,logical,first_stage_mount
+
+/dev/block/platform/bootdevice/by-name/md_udc    /metadata ext4 noatime,nosuid,nodev,discard wait,check,formattable
+/dev/block/platform/bootdevice/by-name/userdata  /data     ext4 noatime,nosuid,nodev,discard wait,check,formattable
+/dev/block/platform/bootdevice/by-name/tranfs    /tranfs   ext4 noatime,nosuid,nodev,noauto_da_alloc,discard wait,check,formattable,nofail

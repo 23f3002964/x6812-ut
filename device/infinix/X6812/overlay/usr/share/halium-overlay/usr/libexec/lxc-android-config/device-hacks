@@ -1,0 +1,55 @@
+#!/bin/sh
+# Device specific "hacks" for the Infinix Hot 11s (X6812 / MT6768).
+# Installed as /usr/libexec/lxc-android-config/device-hacks via the Halium
+# overlay, so it runs from device-hacks.service after the Android container.
+#
+# Adapted from the Xiaomi merlin/lancelot port. All waits are bounded: a
+# missing property must not keep the service running forever.
+
+log() { echo "x6812: $*"; }
+
+wait_prop() {
+    prop="$1"
+    want="$2"
+    i=0
+    while [ "$i" -lt 200 ]; do
+        [ "$(getprop "$prop")" = "$want" ] && return 0
+        i=$((i + 1))
+        sleep 0.1
+    done
+    log "timeout waiting for $prop=$want (now '$(getprop "$prop")')"
+    return 1
+}
+
+# The property service socket must exist before getprop returns real values.
+i=0
+while [ ! -e /dev/socket/property_service ] && [ "$i" -lt 300 ]; do
+    i=$((i + 1))
+    sleep 0.1
+done
+
+# NVRAM has to be up before the radio HAL can talk to the modem.
+wait_prop vendor.service.nvram_init Ready
+wait_prop vendor.mtk.nvram.ready 1
+
+# MediaTek WMT: switch the WiFi driver to station (client) mode.
+i=0
+while [ ! -e /dev/wmtWifi ] && [ "$i" -lt 300 ]; do
+    i=$((i + 1))
+    sleep 0.1
+done
+if [ -e /dev/wmtWifi ]; then
+    echo S > /dev/wmtWifi
+else
+    log "/dev/wmtWifi missing - is wmt_drv.ko loaded?"
+fi
+
+# urfkill.conf / NetworkManager expect this name.
+setprop wifi.interface wlan0
+
+# Keep the WiFi link across suspend where the driver supports it.
+if [ -e /sys/class/ieee80211/phy0 ] && command -v iw >/dev/null 2>&1; then
+    iw phy phy0 wowlan enable magic-packet || true
+fi
+
+exit 0

@@ -1,0 +1,45 @@
+#!/bin/sh
+# aa-exec shim for the X6812 port.
+#
+# This vendor kernel is built with CONFIG_SECURITY_APPARMOR=n, so the real
+# aa-exec cannot set a label (there is no apparmorfs) and exits with an error.
+# Lomiri App Launch still prepends
+#     /usr/bin/aa-exec -p <appid> -- <app>
+# to every click application, so without this shim no app would start.
+#
+# If AppArmor is available (e.g. after a future kernel rebuild) the real binary
+# is used unchanged; otherwise the profile arguments are dropped and the app is
+# executed unconfined, which is the only mode this kernel can provide.
+
+real=/usr/bin/aa-exec.real
+
+if [ -e /sys/module/apparmor ] || [ -e /sys/kernel/security/apparmor/profiles ]; then
+    exec "$real" "$@"
+fi
+
+# Strip aa-exec's own options; UAL uses "-p <profile> [--]" only.
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -p|-f)
+            [ $# -ge 2 ] || break
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -*)
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+[ $# -gt 0 ] || {
+    echo "aa-exec: no command given" >&2
+    exit 2
+}
+
+exec "$@"

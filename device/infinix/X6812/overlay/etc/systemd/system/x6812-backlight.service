@@ -1,0 +1,18 @@
+[Unit]
+Description=X6812: raise the panel backlight at boot
+Documentation=https://github.com/ubports
+# Nothing in UT raises the brightness on this device: libdeviceinfo 0.1 has no
+# backlight key and the stock Android value is 225/4095. Run before the session
+# so the panel is readable even if repowerd never touches it.
+DefaultDependencies=no
+After=systemd-udevd.service
+Wants=systemd-udevd.service
+Before=lightdm.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh /usr/lib/x6812/backlight.sh
+
+[Install]
+WantedBy=multi-user.target
